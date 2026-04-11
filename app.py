@@ -50,34 +50,27 @@ col1, col2 = st.columns(2)
 
 with col1:
     st.header("📊 Your Habits")
-    
-    # Track remaining hours
-    total_available = 24.0
-    
-    study_hours = st.slider("Study Hours Per Day", 0.0, total_available, 4.0, 0.5)
-    remaining_after_study = total_available - study_hours
-    
-    sleep_hours = st.slider("Sleep Hours", 0.0, remaining_after_study, 
-                            min(7.0, remaining_after_study), 0.5)
-    remaining_after_sleep = remaining_after_study - sleep_hours
-    
-    social_media_hours = st.slider("Social Media Hours", 0.0, remaining_after_sleep, 
-                                   min(2.0, remaining_after_sleep), 0.5)
-    remaining_after_social = remaining_after_sleep - social_media_hours
-    
-    netflix_hours = st.slider("Netflix Hours", 0.0, remaining_after_social, 
-                              min(1.0, remaining_after_social), 0.5)
-    remaining_after_netflix = remaining_after_social - netflix_hours
-    
-    exercise_frequency = st.slider("Exercise Days Per Week", 0, 7, 3)
-    mental_health_rating = st.slider("Mental Health Rating (1-10)", 1, 10, 7)
-    
-    # Show remaining hours
-    st.info(f"⏰ Remaining hours in your day: {remaining_after_netflix:.1f} hrs")
+
+    study_hours = st.slider("Study Hours Per Day", 0.0, 24.0, 0.0, 0.5)
+
+    remaining_1 = max(0.1, 24.0 - study_hours)
+    sleep_hours = st.slider("Sleep Hours", 0.0, remaining_1, 0.0, 0.5)
+
+    remaining_2 = max(0.1, remaining_1 - sleep_hours)
+    social_media_hours = st.slider("Social Media Hours", 0.0, remaining_2, 0.0, 0.5)
+
+    remaining_3 = max(0.1, remaining_2 - social_media_hours)
+    netflix_hours = st.slider("Netflix Hours", 0.0, remaining_3, 0.0, 0.5)
+
+    remaining_4 = max(0.0, remaining_3 - netflix_hours)
+    exercise_frequency = st.slider("Exercise Days Per Week", 0, 7, 0)
+    mental_health_rating = st.slider("Mental Health Rating (1-10)", 1, 10, 1)
+
+    st.info(f"⏰ Remaining hours in your day: {remaining_4:.1f} hrs")
 
 with col2:
     st.header("🔮 Your Prediction")
-    
+
     if st.button("Predict My Score!", use_container_width=True):
         # Prepare input
         input_data = np.array([[
@@ -88,14 +81,14 @@ with col2:
             social_media_hours,
             netflix_hours
         ]])
-        
+
         input_scaled = scaler.transform(input_data)
         predicted_score = model.predict(input_scaled)[0][0]
         predicted_score = float(np.clip(predicted_score, 0, 100))
-        
+
         # Show score
         st.metric("Predicted Exam Score", f"{predicted_score:.1f} / 100")
-        
+
         # Score feedback
         if predicted_score >= 80:
             st.success("Excellent! You're on track for great results! 🌟")
@@ -103,7 +96,7 @@ with col2:
             st.warning("Good! A few improvements can push you higher! 💪")
         else:
             st.error("Let's work on your habits to improve your score! 📚")
-        
+
         # Get AI advice
         st.header("🤖 AI Study Advisor")
         with st.spinner("Getting personalized advice..."):
